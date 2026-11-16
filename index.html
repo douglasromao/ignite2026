@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From Pilot to Platform · TT1766</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@600&family=Inter:wght@400;600;700&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root { --paper: #FDFBFA; --ink: #1A1714; --soft: #B8AEA8; --coral: #E5412B; --coral-deep: #A52A19;
+  --fill: #E5412B; --fill-deep: #A52A19; --coral-text: #E5412B;
+  --glass: rgba(38, 32, 28, .55); --hair: rgba(253, 251, 250, .18); color-scheme: dark;
+  --display: Poppins, ui-sans-serif, system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace; }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: var(--ink); color: var(--paper);
+  font: 17px/1.5 Inter, ui-sans-serif, system-ui, sans-serif; }
+/* fixed glows behind everything, so the frosted panels have something to let through */
+body::before { content: ""; position: fixed; inset: 0; z-index: -1; background:
+  radial-gradient(38rem 28rem at 90% -5%, rgba(229, 65, 43, .42), transparent 62%),
+  radial-gradient(32rem 26rem at -15% 55%, rgba(229, 65, 43, .26), transparent 62%),
+  radial-gradient(30rem 22rem at 75% 105%, rgba(253, 251, 250, .12), transparent 62%), var(--ink); }
+header, main { max-width: 720px; margin: 0 auto; padding: 0 16px; }
+header { display: flex; gap: 10px; align-items: center; padding-top: 16px; padding-bottom: 16px; }
+.label { font: 600 12px/1.2 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--soft); }
+.live::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--coral); margin-right: 8px; animation: pulse 1.6s infinite; }
+@keyframes pulse { 50% { opacity: .25; } }
+
+/* panels: frosted, chunky coral edge */
+.card { background: var(--glass); -webkit-backdrop-filter: blur(18px) saturate(1.4); backdrop-filter: blur(18px) saturate(1.4);
+  border: 2px solid var(--coral); border-radius: 18px; box-shadow: 0 7px 0 var(--coral); padding: 22px; margin: 0 0 24px; }
+.fill { background: var(--fill); color: var(--ink); border-radius: 14px; box-shadow: 0 5px 0 var(--fill-deep); padding: 16px 18px; margin-top: 20px; }
+.fill .label { color: var(--ink); display: block; margin-bottom: 6px; }
+.fill p { margin: 0; font: 700 19px/1.3 var(--display); }
+.pill { display: inline-flex; overflow: hidden; background: var(--ink); border: 2px solid var(--coral); border-radius: 10px; box-shadow: 0 4px 0 var(--coral); }
+.pill b { background: var(--paper); color: var(--ink); font: 600 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; padding: 9px 10px; }
+.pill span { font: 700 14px/1 var(--display); padding: 8px 12px; }
+h1 { font: 800 clamp(28px, 7.2vw, 44px)/1.12 var(--display); letter-spacing: -.035em; margin: 20px 0 14px; }
+h1 mark { display: inline-block; background: var(--fill); color: var(--ink); padding: 0 .22em .04em; border-radius: .22em;
+  transform: rotate(-1.6deg); box-shadow: 0 .12em 0 var(--fill-deep); }
+h2 { font: 700 20px/1.25 var(--display); margin: 0 0 10px; }
+p { margin: 0 0 12px; }
+.lead { color: var(--soft); font-size: 18px; }
+.note { font-size: 14px; color: var(--soft); }
+.err { color: #ff9c8c; font-size: 14px; min-height: 1em; }
+
+/* the four steps are shown in order */
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 22px; align-items: stretch; }
+.steps .done { border-color: var(--coral); color: var(--paper); }
+.duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+@media (max-width: 520px) { .duo { grid-template-columns: 1fr; } }
+.duo div { border: 2px solid var(--hair); border-radius: 12px; padding: 14px; }
+.duo b { font: 800 22px/1 var(--display); color: var(--coral-text); }
+.duo strong { display: block; font: 700 17px/1.25 var(--display); margin: 6px 0; }
+.duo p { font-size: 15px; color: var(--soft); margin: 0 0 8px; }
+.duo p:nth-of-type(2), .duo .ours { margin: 0; color: var(--paper); }
+.duo .ours { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--hair); font-weight: 600; }
+.duo .ours img { width: 36px; height: 36px; object-fit: contain; flex: none; }
+.srcs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 14px; }
+.srcs span { border: 1.5px solid var(--hair); border-radius: 8px; padding: 6px 2px; text-align: center; font-size: 12.5px; font-weight: 600; }
+#brain { display: block; width: 100%; aspect-ratio: 320 / 220; }
+.home { border: 2px solid var(--coral); border-radius: 14px; padding: 12px; text-align: center; }
+.home .pair { display: flex; justify-content: center; gap: 8px; margin-bottom: 8px; }
+.home strong { display: block; font: 700 16px/1.2 var(--display); margin-bottom: 10px; }
+.kinds { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+.kinds span { background: rgba(229, 65, 43, .2); border-radius: 99px; padding: 3px 10px; font-size: 12.5px; font-weight: 600; }
+.tile { flex: none; width: 34px; height: 34px; border-radius: 9px; background: var(--paper); display: grid; place-items: center; }
+.tile img { width: 22px; height: 22px; object-fit: contain; }
+.tile b { font: 800 12px var(--display); color: var(--ink); }
+.feeds { border: 1.5px dashed var(--hair); border-radius: 14px; padding: 10px; margin-top: 14px; }
+.feeds .srcs { margin-top: 10px; }
+.tools { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+.tools span { display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; font-size: 10.5px; font-weight: 600; line-height: 1.15; color: var(--soft); }
+.steps button { min-height: 0; display: block; background: none; border: 2px solid var(--hair); border-radius: 12px; padding: 8px 4px 9px; text-align: center; font: 700 11.5px/1.2 var(--display); color: var(--soft); }
+.steps button:hover:not(:disabled) { transform: none; }
+.steps .ic { display: block; margin: 0 auto 2px; width: 18px; height: 18px; }
+.steps b { display: block; font: 800 22px/1.1 var(--display); color: var(--coral-text); }
+.steps .on { background: var(--fill); border-color: var(--fill); color: var(--ink); box-shadow: 0 4px 0 var(--fill-deep); }
+.steps .on b { color: var(--ink); }
+/* the one-page matrix: knowledge across, scope down */
+.matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; margin-top: 18px; }
+.matrix .label { margin: 0; }
+.matrix .label.axis { grid-column: 1 / -1; display: block; margin-top: 8px; } /* row label sits above its row, so it works on a phone */
+.matrix button { display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start; text-align: left; padding: 12px; min-height: 0; border: 2px solid var(--hair); border-radius: 12px; }
+.matrix button:hover:not(:disabled) { transform: none; border-color: var(--coral); }
+.matrix .ic { vertical-align: -4px; margin-right: 6px; }
+.matrix button > div { display: flex; align-items: center; }
+.matrix b { font: 800 17px/1 var(--display); color: var(--coral); }
+.matrix strong { display: block; font: 700 17px/1.25 var(--display); color: var(--paper); margin: 6px 0 4px; }
+.matrix button span { display: block; font-size: 13.5px; line-height: 1.4; color: var(--soft); }
+.ladder { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin: 16px 0; font: 700 11.5px/1 var(--display); text-align: center; }
+.ladder span { padding: 10px 2px; border: 2px solid var(--hair); border-radius: 8px; color: var(--soft); }
+.ladder .on { background: var(--paper); border-color: var(--paper); color: var(--ink); }
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+td { padding: 9px 0; border-top: 1px solid var(--hair); vertical-align: top; }
+td:first-child { font: 700 15px/1.5 var(--display); padding-right: 14px; white-space: nowrap; }
+td:first-child b { color: var(--coral-text); margin-right: 6px; }
+
+/* controls */
+button, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; min-height: 48px; border-radius: 12px; padding: 12px 14px; background: rgba(253, 251, 250, .06);
+  border: 2px solid var(--hair); transition: transform .12s, border-color .12s, background .12s; }
+button:hover:not(:disabled) { border-color: var(--coral); transform: translateY(-1px); }
+button:disabled { opacity: .35; cursor: default; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible { outline: 3px solid var(--paper); outline-offset: 2px; }
+.opts { display: grid; gap: 10px; margin-top: 14px; }
+.opts button { text-align: left; }
+.primary { background: var(--paper); color: var(--ink); border-color: var(--paper); font: 700 17px var(--display); box-shadow: 0 5px 0 var(--coral); }
+.primary:hover:not(:disabled) { background: var(--fill); border-color: var(--fill); color: var(--ink); box-shadow: 0 5px 0 var(--fill-deep); }
+.link { border: 0; background: none; padding: 0; min-height: 0; color: var(--soft); text-decoration: underline; font-size: 14px; }
+.ic { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.cta { width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; overflow: hidden; }
+.cta .win, .cta:hover .task, .cta:focus-visible .task { display: none; }
+.cta:hover .win, .cta:focus-visible .win { display: inline; }
+@keyframes fly { 0% { transform: none; opacity: 1; } 45% { transform: translate(30px, -24px) scale(.8); opacity: 0; }
+  46% { transform: translate(-24px, 20px); opacity: 0; } 100% { transform: none; opacity: 1; } }
+.cta:hover .ic, .cta:focus-visible .ic { animation: fly 1.4s ease-in-out infinite; }
+@media (hover: none) { .cta .ic { animation: fly 2s ease-in-out infinite; } } /* phones have no hover */
+.dots { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; margin: 14px 0 18px; }
+.dots i { height: 6px; border-radius: 3px; background: var(--hair); }
+.dots .on { background: var(--coral); }
+.bars { display: grid; grid-template-columns: auto 1fr auto; gap: 8px 12px; align-items: center; font-size: 14px; margin: 4px 0 12px; }
+.bars i { display: block; height: 10px; border-radius: 5px; background: var(--hair); overflow: hidden; }
+.bars i b { display: block; height: 100%; border-radius: 5px; background: var(--coral); }
+label { display: block; font-size: 14px; font-weight: 600; margin-top: 12px; }
+input[type=text], input[type=email], input[type=password], textarea { width: 100%; padding: 12px; margin-top: 5px;
+  border: 2px solid var(--hair); border-radius: 12px; background: rgba(0, 0, 0, .28); }
+textarea { resize: vertical; }
+/* share box: kind chips are radios, the checked one turns coral */
+.chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 14px; }
+.chips label { position: relative; margin: 0; }
+.chips input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.chips span { display: block; padding: 9px 4px; text-align: center; font-size: 13.5px; border: 2px solid var(--hair); border-radius: 99px; font-weight: 700; }
+.chips input:checked + span { background: var(--coral); border-color: var(--coral); color: var(--ink); }
+.chips input:focus-visible + span { outline: 3px solid var(--paper); outline-offset: 2px; }
+/* the share panel is paper on ink: every colour is restated so it reads on the light background */
+.sharebox { background: var(--paper); color: var(--ink); border-radius: 14px; padding: 16px; box-shadow: 0 5px 0 var(--coral); margin: 16px 0 4px; }
+.sharebox .head { display: flex; align-items: center; gap: 12px; }
+.sharebox .bulb { flex: none; width: 40px; height: 40px; display: grid; place-items: center; color: #E8A200; }
+.sharebox .bulb .ic { width: 34px; height: 34px; fill: #FFD43B; animation: glow 2.2s ease-in-out infinite; }
+@keyframes glow { 0%, 100% { fill: #FFD43B; filter: drop-shadow(0 0 2px rgba(255, 200, 40, .5)); } 50% { fill: #FFE98A; filter: drop-shadow(0 0 9px rgba(255, 190, 20, .95)); } }
+.sharebox h2 { font: 700 18px/1.25 var(--display); color: var(--ink); margin: 0; }
+.sharebox textarea, .sharebox input[type=text] { background: #fff; color: var(--ink); border: 2px solid rgba(26, 23, 20, .3); }
+.sharebox ::placeholder { color: rgba(26, 23, 20, .55); }
+.sharebox textarea:focus-visible, .sharebox input:focus-visible, .sharebox button:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.sharebox .chips span { border-color: rgba(26, 23, 20, .35); color: var(--ink); }
+.sharebox .chips input:checked + span { background: var(--coral); border-color: var(--coral); color: var(--ink); font-weight: 700; }
+.sharebox .chips input:focus-visible + span { outline-color: var(--ink); }
+.sharebox .primary, .sharebox .primary:hover:not(:disabled) { background: var(--ink); color: var(--paper); border-color: var(--ink); box-shadow: none; transform: none; }
+.sharebox .note, .sharebox .label { color: rgba(26, 23, 20, .7); }
+.sharebox #shared { color: var(--ink); margin: 12px 0 0; }
+.sharebox .err { color: #B3261E; }
+.share { padding: 12px 0; border-top: 1px solid var(--hair); overflow-wrap: anywhere; }
+.share:first-child { border-top: 0; padding-top: 0; }
+.share .label { display: block; margin-bottom: 4px; color: var(--coral-text); }
+.check { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; color: var(--soft); margin: 14px 0; }
+.check input { width: 20px; height: 20px; margin-top: 2px; flex: none; accent-color: var(--coral); }
+
+/* accordions */
+details { border-top: 1px solid var(--hair); }
+details:last-child { margin-bottom: -10px; }
+summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 13px 0; font-weight: 600; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "+"; font: 800 20px/1 var(--display); color: var(--coral-text); }
+details[open] > summary::after { content: "−"; }
+details > :last-child { margin-bottom: 14px; }
+
+/* host */
+.hostbar { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; }
+.hostbar .primary { font-size: 20px; }
+.meta { display: flex; justify-content: space-between; align-items: center; margin: 16px 0 6px; }
+.clock { font: 800 22px var(--display); font-variant-numeric: tabular-nums; min-height: 44px; padding: 6px 14px; }
+.late { color: #ff9c8c; border-color: #ff9c8c; }
+.now { margin: 14px 0 18px; }
+.now .label { display: block; margin: 14px 0 3px; color: var(--coral-text); }
+.nav small { display: block; margin: 12px 0 6px; }
+.nav div { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.nav button { display: flex; align-items: center; gap: 10px; text-align: left; font-weight: 600; min-height: 44px; padding: 8px 12px; }
+.nav .on { background: var(--fill); border-color: var(--fill); color: var(--ink); }
+.qr { text-align: center; }
+.qr a { display: inline-block; text-decoration: none; border-radius: 12px; padding: 12px 18px; margin: 6px 0 12px; }
+.qr svg { width: 100%; max-width: 300px; height: auto; background: #fff; padding: 12px; border-radius: 12px; display: block; margin: 4px auto 10px; }
+/* motion: slides and questions come in from the side you are heading to */
+@keyframes in-next { from { opacity: 0; transform: translateX(28px); } }
+@keyframes in-prev { from { opacity: 0; transform: translateX(-28px); } }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+@keyframes pop { from { opacity: 0; transform: rotate(-1.6deg) scale(.6); } }
+@keyframes grow { from { width: 0; } }
+.next > * { animation: in-next .38s both cubic-bezier(.2, .8, .2, 1); }
+.prev > * { animation: in-prev .38s both cubic-bezier(.2, .8, .2, 1); }
+.rise > * { animation: rise .38s both cubic-bezier(.2, .8, .2, 1); }
+.next > :nth-child(2), .prev > :nth-child(2), .rise > :nth-child(2) { animation-delay: .05s; }
+.next > :nth-child(3), .prev > :nth-child(3), .rise > :nth-child(3) { animation-delay: .1s; }
+.next > :nth-child(4), .prev > :nth-child(4), .rise > :nth-child(4) { animation-delay: .15s; }
+.next > :nth-child(n+5), .prev > :nth-child(n+5), .rise > :nth-child(n+5) { animation-delay: .2s; }
+h1 mark { animation: pop .5s .18s both cubic-bezier(.3, 1.6, .5, 1); }
+.bars i b { animation: grow .8s .1s both ease-out; }
+.ladder .on, .steps .on { animation: rise .4s .25s both; }
+.pager { display: grid; grid-template-columns: 52px 1fr 52px; gap: 10px; align-items: center; text-align: center; margin-top: 16px; }
+.pager button { padding: 0; font-size: 20px; }
+.pager .primary { font-size: 15px; min-height: 44px; }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: 16px; }
+.opts .sel { border-color: var(--coral); background: rgba(229, 65, 43, .2); }
+.how { list-style: none; padding: 0; margin: 18px 0; display: grid; gap: 14px; }
+.how li { display: flex; gap: 14px; align-items: flex-start; }
+.how b { font: 800 28px/1 var(--display); color: var(--coral); min-width: 22px; }
+.how strong { display: block; font: 700 17px/1.3 var(--display); }
+.how span { color: var(--soft); font-size: 15px; }
+footer { text-align: center; padding: 0 16px 110px; }
+.brands { display: flex; justify-content: center; align-items: center; gap: 22px; margin-bottom: 12px; }
+.brands img { height: 44px; max-width: 130px; object-fit: contain; }
+.brands img[alt="Fellowmind"] { height: 30px; } /* a wide wordmark needs less height than the stacked Romaos mark */
+#tabs { position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 5; width: min(92vw, 420px);
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 6px; border: 2px solid var(--coral); border-radius: 18px;
+  box-shadow: 0 5px 0 var(--coral); background: rgba(38, 32, 28, .72); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+#tabs[hidden] { display: none; }
+#tabs button { border: 0; background: none; min-height: 48px; padding: 5px; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  font: 700 11.5px var(--display); color: var(--soft); }
+#tabs .on { background: var(--fill); color: var(--ink); }
+.pick { width: 100%; display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; align-items: start; text-align: left; margin-top: 14px; padding: 16px;
+  border: 2px solid var(--coral); border-radius: 14px; box-shadow: 0 5px 0 var(--coral); background: rgba(253, 251, 250, .05); color: var(--soft); font-size: 15px; }
+.pick:hover:not(:disabled) { background: rgba(229, 65, 43, .18); }
+.pick .tile { width: 42px; height: 42px; color: var(--ink); }
+.pick strong { display: block; font: 700 19px/1.25 var(--display); color: var(--paper); margin-bottom: 3px; }
+.pick small { display: block; margin-top: 8px; color: var(--coral-text); }
+.pick > b { grid-column: 2; justify-self: start; margin-top: 6px; font: 700 14px var(--display); color: var(--ink); background: var(--paper); border-radius: 8px; padding: 6px 12px; }
+.fab { display: flex; align-items: center; gap: 6px; font-size: 14px; min-height: 38px; padding: 6px 12px; border-radius: 10px; box-shadow: 0 4px 0 var(--coral); }
+header .pill, .fab { flex: none; white-space: nowrap; }
+#status { margin-left: auto; text-align: right; }
+dialog.card { color: var(--paper); width: min(92vw, 380px); margin: auto; background: rgba(38, 32, 28, .92); }
+dialog[open] { animation: rise .3s both; }
+dialog::backdrop { background: rgba(0, 0, 0, .6); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+@media (prefers-reduced-motion: reduce) { *, .cta .ic { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<header><span class="pill"><b>TT1766</b><span>Table 6</span></span><button id="connect" class="primary fab" aria-label="Connect with Douglas"></button><span class="label live" id="status">Live</span></header>
+<main>
+  <section id="home" class="card" hidden></section>
+  <section id="slide" class="card" aria-live="polite"></section>
+  <div id="host"></div>
+  <section id="check" class="card"></section>
+</main>
+<footer class="label">
+  <div class="brands"><img src="logos/romaos.png" alt="Romaos" onerror="if(!this.dataset.png){this.dataset.png=1;this.src='logos/romaos.png'}else this.remove()"><img src="logos/fellowmind.png" alt="Fellowmind" onerror="if(!this.dataset.png){this.dataset.png=1;this.src='logos/fellowmind.png'}else this.remove()"></div>
+  From Pilot to Platform · Douglas Romão</footer>
+<nav id="tabs" aria-label="Sections" hidden></nav>
+<dialog id="card" class="card qr" aria-labelledby="card-title"></dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+// ---- Config: paste your Supabase project URL and publishable (anon) key. Both are safe to publish.
+const SUPABASE_URL = '';
+const SUPABASE_KEY = '';
+
+// ---- Content -------------------------------------------------------------------------------
+const WORDS = [
+  { k: 'remember', icon: 'brain', label: 'Remember', monday: 'Pick one live project. Agree the one place where decisions go, and write down the last three.' },
+  { k: 'act', icon: 'bolt', label: 'Act', monday: 'Pick one thing your team does every week, such as the status report. Let an agent draft it, and name the person who approves it.' },
+  { k: 'connect', icon: 'link', label: 'Connect', monday: 'Take your last sales-to-delivery handoff and list everything that was retyped by hand. That list is your first integration.' },
+  { k: 'trust', icon: 'shield', label: 'Trust', monday: 'Before your next pilot starts, write down how long one task takes today and what result would make you stop, extend or spread.' },
+];
+const LEVELS = [
+  ['Explorer', 'People are experimenting on their own. Nothing is shared yet, so every pilot starts from zero.'],
+  ['Practitioner', 'Teams use AI in repeatable ways, but project memory and measurement are still manual.'],
+  ['Integrator', 'Agents work on shared project memory across teams, with clear points where a person approves.'],
+  ['Champion', 'You run a measured platform. Each new project starts with what the last one learned.'],
+];
+const QUESTIONS = [
+  ['remember', 'A new person joins a project. Where do they find out why a decision was made?',
+    ['They ask whoever was there', 'They search mail, chats and folders', 'One agreed place per project, kept up by people', 'One place that agents also read from and write to']],
+  ['remember', 'When a project ends, what happens to what the team learned?',
+    ['It leaves with the people', 'A lessons document that few people reopen', 'The next project reviews and reuses it', 'It flows back automatically, so the next project starts with it']],
+  ['act', 'What do your agents mostly do today?',
+    ['We have none in real use', 'Answer questions when asked', 'Carry out tasks when a person starts them', 'Start on events by themselves and stop at checkpoints for approval']],
+  ['act', 'An agent is about to change a live system. Who decides?',
+    ['We are not there yet', 'Nobody has defined it', 'A person approves case by case', 'A defined gate: the agent proposes, a named role approves, and it is logged']],
+  ['connect', 'How do different teams use AI on the same project?',
+    ['Mostly they do not', 'Each team in its own tool with its own context', 'Some shared sources, with manual handoffs', 'Each team in its own tool, all on the same project memory']],
+  ['connect', 'Sales closes a deal. How does delivery get the context?',
+    ['A meeting and forwarded emails', 'A handoff document written by hand', 'A template filled in from the CRM', 'The project space and a draft backlog are created automatically, and a person approves']],
+  ['trust', 'How do you know AI is saving time?',
+    ['We do not', 'People tell us it does', 'Usage and licence dashboards', 'We measure against a baseline agreed before we started']],
+  ['trust', 'Someone asks for every agent, its owner and the data it can touch. Can you answer?',
+    ['No', 'A partial list, after some digging', 'Yes, an inventory with owners', 'Yes, with owners, data access, cost and a rule for retiring agents']],
+];
+// Icon paths (24x24, stroked).
+const I = {
+  grid: '<path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/>',
+  ask: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1 1-1.1 1.8M12 17h.01"/>',
+  brain: '<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+  bolt: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  link: '<circle cx="6" cy="12" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="18" cy="18" r="3"/><path d="m8.6 10.7 6.8-3.4M8.6 13.3l6.8 3.4"/>',
+  shield: '<path d="M12 3 4 6v6c0 4.5 3.2 7.8 8 9 4.8-1.2 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/>',
+  layers: '<path d="m12 3 9 5-9 5-9-5zM3 13l9 5 9-5"/>',
+  cal: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+  bulb: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/>',
+  plane: '<path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/>',
+  home: '<path d="M3 11 12 3l9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  screen: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
+  list: '<path d="M10 6h10M10 12h10M10 18h10M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/>',
+  add: '<circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6M19 8v6M16 11h6"/>',
+};
+const LINK = 'https://linktr.ee/douglasromao';
+// Project Brain picture: sources on both sides, data flowing into the middle.
+const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Logos are files in logos/. A missing file falls back to letters, so dropping the file in later is enough.
+const logo = (file, alt, letters) => `<i class="tile"><img src="logos/${file}.svg" alt="${alt}" onerror="if(!this.dataset.png){this.dataset.png=1;this.src='logos/${file}.png'}else this.outerHTML='<b>${letters}</b>'"></i>`; // tries .svg, then .png
+const BRAIN = `
+  <div class="feeds">
+    <div class="tools">${[['copilot-studio', 'Copilot Studio', 'CS'], ['m365-copilot', 'M365 Copilot', 'M'], ['foundry', 'Foundry', 'F'], ['fabric', 'Fabric', 'Fa'], ['work-iq', 'Work IQ', 'IQ']]
+      .map(([f, n, l]) => `<span>${logo(f, '', l)}${n}</span>`).join('')}</div>
+    <div class="srcs">${['Requirements', 'Decisions', 'Data', 'Designs', 'Code', 'Meetings'].map(t => `<span>${t}</span>`).join('')}</div>
+  </div>
+  <canvas id="brain" role="img" aria-label="Requirements, decisions, data, designs, code and meetings, produced in tools like Copilot Studio, Microsoft 365 Copilot, Foundry, Fabric and Work IQ, flow into the project brain as dots. Each one lights up a neuron, and the brain stores it in SharePoint and Azure DevOps."></canvas>
+  <div class="home">
+    <div class="pair">${logo('sharepoint', 'SharePoint', 'SP')}${logo('azure-devops', 'Azure DevOps', 'AD')}</div>
+    <strong>SharePoint + Azure DevOps</strong>
+    <div class="kinds">${['Documents', 'Wiki', 'Work items', 'Repos', 'AI assets', 'Knowledge'].map(t => `<span>${t}</span>`).join('')}</div>
+  </div>`;
+
+// The brain itself: neurons laid out in a side-view brain shape. Dots fall in from the sources above,
+// light the neuron they land on, and the brain sends dots down to where it is stored.
+function startBrain() {
+  const cv = $('#brain');
+  if (!cv) return;
+  const x = cv.getContext('2d'), W = 320, H = 220, BX = 160, BY = 104, BW = 112, BH = 86;
+  const C = ['#E5412B', '#ff7a5c', '#ffb3a3', '#FDFBFA'];
+  const inside = (u, v) => (u * u + ((v + .08) / .74) ** 2 < 1 && v < .42)        // cerebrum
+    || ((u - .48) ** 2 / .09 + (v - .5) ** 2 / .035 < 1)                         // cerebellum
+    || (Math.abs(u - .16) < .07 && v > .3 && v < .82);                           // brain stem
+  let seed = 7;
+  const rnd = () => (seed = seed * 16807 % 2147483647, (seed - 1) / 2147483646); // seeded, so the brain looks the same for everyone
+  const P = [];
+  while (P.length < 320) { const u = rnd() * 2 - 1, v = rnd() * 2 - 1; if (inside(u, v)) P.push({ x: BX + u * BW, y: BY + v * BH, p: rnd() * 6.28, g: 0, c: C[Math.floor(rnd() * 4)] }); }
+  const links = [];
+  P.forEach((a, i) => { for (let j = i + 1; j < P.length; j++) if ((a.x - P[j].x) ** 2 + (a.y - P[j].y) ** 2 < 15 * 15) links.push([a, P[j]]); });
+  const IN = [], OUT = [], SRC = [W / 6, W / 2, W * 5 / 6], HOME = [W / 2], glow = [0]; // one home: SharePoint and Azure DevOps together
+  const any = a => a[Math.floor(Math.random() * a.length)], q = (a, b, c, t) => (1 - t) * (1 - t) * a + 2 * (1 - t) * t * b + t * t * c;
+  const dot = (px, py, r, c, al) => { x.globalAlpha = al; x.fillStyle = c; x.beginPath(); x.arc(px, py, r, 0, 6.283); x.fill(); };
+  const spawnIn = () => IN.push({ sx: any(SRC), t: any(P), a: 0, sp: .006 + Math.random() * .006 });
+  const spawnOut = () => OUT.push({ f: any(P), h: 0, a: 0, sp: .008 + Math.random() * .004 });
+  let last = 0, ti = 0, to = 0;
+  function frame(ts) {
+    if (!cv.isConnected) return; // slide changed
+    const px = Math.round(cv.clientWidth * (devicePixelRatio || 1));
+    if (cv.width !== px) { cv.width = px; cv.height = Math.round(px * H / W); }
+    const dt = Math.min(50, ts - (last || ts)), tt = ts / 1000; last = ts; ti += dt; to += dt;
+    if (ti > 110) { ti = 0; if (IN.length < 50) spawnIn(); }
+    if (to > 380) { to = 0; spawnOut(); }
+    x.setTransform(cv.width / W, 0, 0, cv.width / W, 0, 0); x.clearRect(0, 0, W, H);
+    x.globalAlpha = 1; x.lineWidth = .5;
+    for (const [a, b] of links) { x.strokeStyle = `rgba(253,251,250,${(.08 + .32 * Math.max(a.g, b.g)).toFixed(3)})`; x.beginPath(); x.moveTo(a.x, a.y); x.lineTo(b.x, b.y); x.stroke(); }
+    for (const p of P) {
+      p.g *= .96;
+      const r = 1.3 + 1.6 * p.g;
+      dot(p.x, p.y, r, p.c, Math.min(1, .4 + .4 * (.55 + .45 * Math.sin(tt * 1.6 + p.p)) + p.g));
+      if (p.g > .15) dot(p.x, p.y, r * 3.5, p.c, p.g * .35); // the synapse flash
+    }
+    for (let i = IN.length - 1; i >= 0; i--) {
+      const o = IN[i]; o.a += o.sp * dt / 16;
+      if (o.a >= 1) { o.t.g = 1; IN.splice(i, 1); continue; }
+      const e = o.a < .5 ? 2 * o.a * o.a : 1 - (-2 * o.a + 2) ** 2 / 2, ix = q(o.sx, o.sx, o.t.x, e), iy = q(0, 34, o.t.y, e);
+      dot(ix, iy, 4, '#ff7a5c', .25); dot(ix, iy, 1.8, '#ff7a5c', 1);
+    }
+    for (let i = OUT.length - 1; i >= 0; i--) {
+      const o = OUT[i]; o.a += o.sp * dt / 16;
+      if (o.a >= 1) { glow[o.h] = 1; OUT.splice(i, 1); continue; }
+      const e = o.a * o.a * (3 - 2 * o.a), ox = q(o.f.x, HOME[o.h], HOME[o.h], e), oy = q(o.f.y, H - 30, H, e);
+      dot(ox, oy, 4.5, '#FDFBFA', .3); dot(ox, oy, 2, '#FDFBFA', 1);
+    }
+    HOME.forEach((hx, h) => {
+      glow[h] *= .94; x.globalAlpha = 1;
+      const g = x.createRadialGradient(hx, H, 0, hx, H, 60);
+      g.addColorStop(0, `rgba(229,65,43,${(.12 + .5 * glow[h]).toFixed(3)})`); g.addColorStop(1, 'rgba(229,65,43,0)');
+      x.fillStyle = g; x.fillRect(hx - 60, H - 60, 120, 60);
+    });
+    if (!calm) requestAnimationFrame(frame);
+  }
+  if (calm) { // one still frame with dots mid-flight
+    for (let i = 0; i < 30; i++) spawnIn();
+    for (let i = 0; i < 6; i++) spawnOut();
+    [...IN, ...OUT].forEach(o => o.a = Math.random() * .9);
+    frame(1);
+  } else requestAnimationFrame(frame);
+}
+const DUO = `<div class="duo">
+  <div><b>A</b><strong>Same brain, their tools</strong><p>Each team stays in the tool it already knows: GitHub Copilot, Microsoft 365 Copilot, Dynamics 365.</p><p>Quick to start. You are limited by what each tool can reach.</p></div>
+  <div><b>B</b><strong>Same brain, your own tool</strong><p>You build one workbench around how you deliver, with a front door for each role.</p><p>Your process is built in. You have to build it and keep it running.</p>
+    <p class="ours"><img src="logos/fmdk-agentic-os.png" alt="" onerror="this.remove()">The one we built: FMDK Agentic OS</p></div>
+</div>`;
+
+const icon = k => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${I[k]}</svg>`;
+// The one-page matrix: columns are knowledge/action, rows are one team/whole organization. Defined after WORDS, I and icon().
+const cell = (n, line) => `<button data-step="${n}" aria-label="Go to round ${n}: ${WORDS[n - 1].label}"><div>${icon(WORDS[n - 1].icon)}<b>${n}</b></div><strong>${WORDS[n - 1].label}</strong><span>${line}</span></button>`;
+const FRAMEWORK = `
+  <div class="matrix">
+    <span class="label">Knowledge</span><span class="label">Action</span>
+    <span class="label axis">One team</span>
+    ${cell(1, 'Every project gets a living brain on day one.')}${cell(2, 'Agents do the repeatable work, with gates where a person says yes.')}
+    <span class="label axis">Whole organization</span>
+    ${cell(4, 'Every agent known, owned and measured.')}${cell(3, 'Every team in its own tool, on the same brain.')}
+  </div>
+  <div class="ladder">${LEVELS.map(l => `<span>${l[0]}</span>`).join('')}</div>
+  <p class="note">Before a pilot starts, agree four gates: <b>adoption</b> (people keep using it), <b>quality</b> (rated where the work is delivered),
+  <b>return</b> (measured saving against total cost) and <b>evidence</b> (real numbers from real work). All four pass: spread. Two or three: one extension. Fewer: stop, and keep the lessons.</p>`;
+
+
+// tag = [label, text] for the pill. [brackets] in a title mark the highlighted phrase.
+// until = minute of the 45 by which the slide should be done. notes show in the host view only: the first two stay open, the rest fold.
+const SLIDES = [
+  { nav: 'Welcome', icon: 'grid', tag: ['Table Talk', 'Ignite 2026'], title: 'From Pilot to [Platform]', body: 'Building an Agentic OS for your organization. Four steps for the next 45 minutes, each one standing on the one before.', until: 3,
+    notes: [['Do', 'Hold up the QR as people sit down. Ask everyone to open it and start the 2-minute check.'],
+      ['Say', 'This is a conversation, not a talk. You will leave with one operating model and one thing to do on Monday.']] },
+  { nav: 'Hook', icon: 'ask', tag: ['Opening', '500,000 agents'], title: 'Does any agent in your organization remember [what it did last week?]',
+    body: 'Microsoft’s agent registry lists more than 500,000 agents. Most of them start every day from zero.',
+    ask: 'Your name, your role, and one agent or pilot you have running. Is it a pilot or a platform?', until: 8,
+    notes: [['Hook', 'Microsoft’s registry shows more than 500,000 agents. Hands up if one of yours remembers what it did last week.'],
+      ['Bridge from the abstract', 'The abstract says governance. Governance tells you which agents exist and who owns them. It does not tell an agent what your project decided last Tuesday. That gap is where pilots stall, so that is where we will spend our time.'],
+      ['Intros', '20 seconds each. Note who is a developer, a PM, a line manager, in sales. You will call on them in round 3.'],
+      ['Frame', 'Four steps, in build order. Agents cannot act well without memory. Teams cannot connect until agents act on a shared memory. And you cannot scale any of it without trust. One round each, then what you will do Monday.']] },
+  { word: 'remember', nav: 'Remember', icon: 'brain', tag: ['Round 1', 'Remember'], title: 'The Project [Brain]',
+    body: 'Everything the project produces flows into one living memory. It lives in SharePoint and Azure DevOps, where people and agents both read it and write to it.', html: BRAIN,
+    ask: 'A new person joins your project tomorrow. Where do they find out why a decision was made?', until: 17,
+    notes: [['Follow-ups', 'Who is allowed to write to it: people only, or agents too? · What is in your project memory that you would not want an agent to read? · What goes stale first?'],
+      ['Listen for', '“We ask in Teams.” That means the memory lives in people’s heads. Name it: lessons leave when people roll off.'],
+      ['Demo (2 min)', 'A newcomer asks the brain a question. Paper fallback ready.'],
+      ['Stories', 'Armanino, COSMO CONSULT, Verdantas, Visma, SOCAR, Centrica.']] },
+  { word: 'act', nav: 'Act', icon: 'bolt', tag: ['Round 2', 'Act'], title: 'Agents that [start themselves]',
+    body: 'A file lands, a deal closes, a work item changes. An agent in Copilot Studio or Foundry picks it up, does the work, and stops at a checkpoint for a person.',
+    ask: 'Which step in your process would you let an agent start on its own, and where must a person say yes?', until: 26,
+    notes: [['Follow-ups', 'What is the worst thing an agent could do unattended in your process? Put the checkpoint just before it. · Is the approver a named person or a role?'],
+      ['Demo (2 min)', 'Contract to draft backlog, waiting for PM approval. Say that the “when a file is created” trigger is in preview.'],
+      ['Cost', 'A reasoning model can raise agent credit use about 7.5x. The newer Copilot harness bills during build and testing, not only after publishing.'],
+      ['ROI debate', 'SOCAR’s headline says 7,500+ hours; the body adds up to 6,318. Eczacıbaşı’s €3.8M is a projection. Ask: how would you check a number like that in your own organization?']] },
+  { word: 'connect', nav: 'Connect', icon: 'link', tag: ['Round 3', 'Connect'], title: 'One brain, [many teams]',
+    body: 'Developers, PMs, line managers and sales all work on the same project memory. There are two ways to get there.', html: DUO,
+    ask: 'Which fits your organization: each team in its own tool, or one tool you build yourself? What decides it?', until: 34,
+    notes: [['Two approaches', 'A: one brain, each team keeps its tool. B: build your own tool on top of the brain. Tell your own story for B: you built your own workbench with a front door per role, and what that cost and gave you. Ask what pushes them one way: licences, skills in the team, how standard their process is.'],
+      ['Then ask', 'Where does a handoff between two teams lose the most context today? Would A or B fix that one?'],
+      ['Call on roles', 'Ask the developer, the PM, the line manager and the seller in turn: what would you need from the others without leaving your tool?'],
+      ['Flagship: deal to delivery', 'D365 sale closes → agent creates the project space in SharePoint and ADO → agent drafts a backlog for PM approval → developers take it to a PR in GitHub Copilot through MCP → the PM gets a status digest in M365 Copilot.'],
+      ['Be straight', 'Every piece is GA, but the whole chain has not been tested end to end, so walk it as a story unless you tested it. Planner status reports are still rolling out.'],
+      ['Cost', 'For a 20-person team the connecting agent is about 5% of a roughly $903 monthly bill. Licences are the rest.'],
+      ['Line', 'Nobody learns a new tool. They ask in the one they already have.']] },
+  { word: 'trust', nav: 'Trust', icon: 'shield', tag: ['Round 4', 'Trust'], title: 'Trust is what [lets you scale]',
+    body: 'Know every agent, who owns it, what data it touches, what it costs, and whether it saves the time people say it does.',
+    ask: 'If you had to stop one agent tomorrow, how would you know which one, and who would you call?', until: 38,
+    notes: [['Keep it short', '4 minutes. Governance is the supporting thread here; the other tables in this slot cover it in depth.'],
+      ['Why it is the top step', 'You need some trust at every step. It is the top one because it is what takes you from one team to the whole organization. Do not let anyone hear “governance comes last”.'],
+      ['Line', 'Measured, not self-reported.'],
+      ['Demo (1 min)', 'Agent 365: the list of agents, owners and access.'],
+      ['Follow-up', 'Who defined success before your last pilot started?']] },
+  { nav: 'The model', icon: 'layers', tag: ['The model', 'one page'], title: 'The Agentic OS [on one page]', html: FRAMEWORK, nosteps: true, until: 41,
+    notes: [['Use the table pulse', 'Read out the weakest word from the panel below: “This table is weakest on …”. Ask who scored it low and why.'],
+      ['Ladder', 'Explorer → Practitioner → Integrator → Champion. Most organizations are strong on Act and weak on Remember: agents without memory.'],
+      ['Gates', 'The point is agreeing them before the pilot. Example thresholds: 70% of users at Practitioner or above, 4 out of 5 average rating, 5x return, 3 pieces of work with real numbers.']] },
+  { nav: 'Monday', icon: 'cal', tag: ['Your turn', 'one thing'], title: 'What will you do [on Monday?]', body: 'One project. One weekly task. One number.',
+    ask: 'Say it out loud: the one thing you will do on Monday, and who needs to say yes.', until: 44,
+    notes: [['Go round', '20 seconds each. Their result on the phone suggests a Monday action if they are stuck.'],
+      ['Starter', 'Pick one live project, agree the one place decisions go, and write down the last three.']] },
+  { nav: 'Thanks', icon: 'plane', tag: ['Thank you', 'stay in touch'], title: 'Keep the conversation [going]',
+    body: 'Finish the 2-minute check below and leave your email. I will send the framework, the questions and the demos from this table.', link: LINK, until: 45,
+    notes: [['Close', 'Thank them. Say you are around after the session. Ask them to leave their email in the check if they want the material.']] },
+];
+const NAV = [['Open', [0, 1]], ['Rounds', [2, 3, 4, 5]], ['Close', [6, 7, 8]]];
+
+// ---- Storage --------------------------------------------------------------------------------
+const L = {
+  get(k, d) { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+const sb = SUPABASE_URL && window.supabase ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+const ok = ({ data, error }) => { if (error) throw error; return data; };
+const store = sb ? {
+  getSlide: async () => ok(await sb.from('state').select('slide').eq('id', 1).single()).slide,
+  setSlide: async n => ok(await sb.from('state').update({ slide: n }).eq('id', 1)),
+  onSlide: cb => sb.channel('state').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'state' }, p => cb(p.new.slide)).subscribe(),
+  submit: async row => ok(await sb.from('responses').insert(row)),
+  share: async row => ok(await sb.from('shares').insert(row)),
+  shares: async () => ok(await sb.from('shares').select('kind,text,name,created_at').order('created_at')),
+  responses: async () => ok(await sb.from('responses').select('cid,scores,level').order('created_at')),
+  isHost: async () => !!(await sb.auth.getSession()).data.session,
+  signIn: async (email, password) => ok(await sb.auth.signInWithPassword({ email, password })),
+} : {
+  // ponytail: demo mode only syncs tabs of one browser; fill in the Supabase config above for real devices
+  getSlide: async () => L.get('demo-slide', 0),
+  setSlide: async n => L.set('demo-slide', n),
+  onSlide: cb => addEventListener('storage', e => e.key === 'demo-slide' && cb(+e.newValue)),
+  submit: async row => L.set('demo-responses', [...L.get('demo-responses', []), row]),
+  responses: async () => L.get('demo-responses', []),
+  share: async row => L.set('demo-shares', [...L.get('demo-shares', []), { ...row, created_at: new Date().toISOString() }]),
+  shares: async () => L.get('demo-shares', []),
+  isHost: async () => true,
+};
+
+// ---- Scoring --------------------------------------------------------------------------------
+function score(answers) {
+  const scores = Object.fromEntries(WORDS.map(w => [w.k, 0]));
+  answers.forEach((a, i) => scores[QUESTIONS[i][0]] += a);
+  const total = Object.values(scores).reduce((x, y) => x + y, 0);
+  const level = Math.min(3, Math.floor(Math.max(0, total - 1) / 6)); // 0-6, 7-12, 13-18, 19-24
+  const weakest = WORDS.reduce((m, w) => scores[w.k] < scores[m.k] ? w : m);
+  return { scores, total, level, weakest };
+}
+function summarize(rows) {
+  const latest = Object.values(Object.fromEntries(rows.map(r => [r.cid, r]))); // a person may submit twice (with and without contact)
+  const avg = Object.fromEntries(WORDS.map(w => [w.k, latest.reduce((s, r) => s + r.scores[w.k], 0) / (latest.length || 1)]));
+  const weakest = WORDS.reduce((m, w) => avg[w.k] < avg[m.k] ? w : m);
+  const levels = LEVELS.map(l => latest.filter(r => r.level === l[0]).length);
+  return { n: latest.length, avg, weakest, levels };
+}
+console.assert(score([0, 0, 0, 0, 0, 0, 0, 0]).level === 0 && score([3, 3, 3, 3, 3, 3, 3, 3]).level === 3
+  && score([3, 3, 1, 0, 3, 3, 3, 3]).weakest.k === 'act' && score([1, 1, 1, 1, 1, 1, 1, 0]).level === 1, 'scoring self-check failed');
+
+// ---- Rendering ------------------------------------------------------------------------------
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => `&#${c.charCodeAt(0)};`); // everything the audience types goes through this
+const KINDS = { idea: ['Idea', 'Something you think could work...'], experience: ['Experience', 'Something you tried, and what happened...'], challenge: ['Challenge', 'Something that is blocking you...'] };
+const pill = ([a, b]) => `<span class="pill"><b>${a}</b><span>${b}</span></span>`;
+const bars = (vals, max) => `<div class="bars">${WORDS.map(w =>
+  `<span>${w.label}</span><i><b style="width:${vals[w.k] / max * 100}%"></b></i><span>${(+vals[w.k].toFixed(1))}/${max}</span>`).join('')}</div>`;
+const isHostView = location.hash === '#host';
+// slide = what this screen shows, live = where the host is. The audience can browse and come back.
+let slide = 0, live = 0, dir = 'rise';
+function renderSlide() {
+  const s = SLIDES[slide];
+  const at = s.word ? WORDS.findIndex(w => w.k === s.word) : slide > 5 ? 4 : -1; // how far up the stairs we are
+  $('#slide').innerHTML = `<div class="${dir}">${pill(s.tag)}
+    <h1>${s.title.replace('[', '<mark>').replace(']', '</mark>')}</h1>
+    ${s.body ? `<p class="lead">${s.body}</p>` : ''}${s.html || ''}
+    ${s.link ? `<div class="qr">${qrSvg(s.link)}<a class="primary" href="${s.link}" target="_blank" rel="noopener">${s.link.replace('https://', '')}</a><p class="note">Scan or tap for all of Douglas’s links.</p></div>` : ''}
+    ${s.ask ? `<div class="fill"><span class="label">At the table</span><p>${s.ask}</p></div>` : ''}
+    ${s.nosteps ? '' : `<div class="steps">${WORDS.map((w, n) => `<button data-step="${n + 1}" aria-label="Go to round ${n + 1}: ${w.label}" class="${n === at ? 'on' : n < at ? 'done' : ''}"><b>${n + 1}</b>${w.label}</button>`).join('')}</div>`}
+    </div><div class="pager" id="pager"></div>`;
+  document.querySelectorAll('#slide [data-step]').forEach(b => b.onclick = () => {
+    const n = SLIDES.findIndex(x => x.word === WORDS[b.dataset.step - 1].k);
+    isHostView ? go(n) : show(n);
+  });
+  startBrain();
+  renderPager();
+  if (isHostView) renderHost();
+}
+function renderPager() {
+  const el = $('#pager');
+  if (!el || isHostView) return void (el && (el.hidden = true));
+  el.innerHTML = `<button id="sprev" aria-label="Previous slide" ${slide ? '' : 'disabled'}>←</button>
+    ${slide === live ? `<span class="label live">Following Douglas live · ${slide + 1} of ${SLIDES.length}</span>`
+      : `<button id="tolive" class="primary">Back to live · ${SLIDES[live].nav}</button>`}
+    <button id="snext" aria-label="Next slide" ${slide < SLIDES.length - 1 ? '' : 'disabled'}>→</button>`;
+  $('#sprev').onclick = () => show(slide - 1);
+  $('#snext').onclick = () => show(slide + 1);
+  if ($('#tolive')) $('#tolive').onclick = () => show(live);
+}
+function show(n) {
+  if (!Number.isInteger(n) || n < 0 || n >= SLIDES.length || n === slide) return;
+  dir = n > slide ? 'next' : 'prev'; slide = n; renderSlide();
+}
+function setLive(n) {
+  if (!Number.isInteger(n) || n < 0 || n >= SLIDES.length || n === live) return;
+  const following = slide === live; // someone browsing on their own stays where they are
+  live = n;
+  if (following || isHostView) show(n); else renderPager();
+  const now = $('#nowline'); if (now) now.textContent = nowLine(); // keeps "Now · ..." current without wiping a half-typed share
+}
+
+// ---- Participant: the check -----------------------------------------------------------------
+// me.i = the question on screen (QUESTIONS.length = the result). Answers fill in order, so i never passes answers.length.
+const me = L.get('tt1766', null) || { cid: crypto.randomUUID(), answers: [], sent: false };
+me.i ??= me.answers.length; me.started ??= me.i > 0;
+const save = () => L.set('tt1766', me);
+const row = extra => { const r = score(me.answers); return { cid: me.cid, answers: me.answers, scores: r.scores, level: LEVELS[r.level][0], ...extra }; };
+
+function renderCheck(dir = 'rise') {
+  const el = $('#check'), i = me.i, N = QUESTIONS.length;
+  const to = (n, d) => { me.i = n; save(); renderCheck(d); };
+  if (!me.started) {
+    el.innerHTML = `<div class="${dir}">${pill(['2-minute check', `${N} questions`])}
+      <h2 style="margin-top:18px">How far is your organization from pilot to platform?</h2>
+      <ol class="how">
+        <li><b>1</b><div><strong>Answer ${N} quick questions</strong><span>Two for each word: Remember, Act, Connect, Trust. Pick what is true today.</span></div></li>
+        <li><b>2</b><div><strong>See your level straight away</strong><span>One of four levels, your weakest word, and one thing to do on Monday.</span></div></li>
+        <li><b>3</b><div><strong>Get the framework by email</strong><span>Optional. Leave your address at the end and Douglas sends the framework, the questions and the demos.</span></div></li>
+      </ol>
+      <button class="primary" id="start" style="width:100%">Start the check</button>
+      <p class="note" style="margin:16px 0 0">Your answers are anonymous unless you leave your email. You can go back and change them.</p></div>`;
+    $('#start').onclick = () => { me.started = true; to(me.i, 'next'); };
+    return;
+  }
+  if (i < N) {
+    const [word, q, opts] = QUESTIONS[i], picked = me.answers[i];
+    el.innerHTML = `${pill([`Question ${i + 1} of ${N}`, WORDS.find(w => w.k === word).label])}
+      <div class="dots">${QUESTIONS.map((_, n) => `<i class="${n <= i ? 'on' : ''}"></i>`).join('')}</div>
+      <div class="${dir}"><h2>${q}</h2>
+      <div class="opts">${opts.map((o, n) => `<button data-a="${n}" class="${n === picked ? 'sel' : ''}" aria-pressed="${n === picked}">${o}</button>`).join('')}</div></div>
+      <div class="row"><button id="back">← Back</button>
+        ${picked == null ? '<span class="note">Pick the closest to today, not the plan.</span>' : '<button id="fwd">Next →</button>'}</div>`;
+    const fwd = () => { if (i + 1 === N) store.submit(row()).catch(console.error); to(i + 1, 'next'); }; // resubmits after a changed answer
+    el.querySelectorAll('[data-a]').forEach(b => b.onclick = () => { me.answers[i] = +b.dataset.a; fwd(); });
+    $('#back').onclick = () => { if (!i) me.started = false; to(Math.max(0, i - 1), 'prev'); };
+    if ($('#fwd')) $('#fwd').onclick = fwd;
+    return;
+  }
+  // Order of operations: where you are, what to do Monday, get the material. The detail folds away.
+  const r = score(me.answers), [name, desc] = LEVELS[r.level], up = LEVELS[r.level + 1];
+  el.innerHTML = `<div class="${dir}">${pill(['Your result', `level ${r.level + 1} of 4`])}
+    <h1><mark>${name}</mark></h1><p class="lead">${desc}</p>
+    <div class="ladder">${LEVELS.map((l, n) => `<span class="${n === r.level ? 'on' : ''}">${l[0]}</span>`).join('')}</div>
+    <p class="note">You scored ${r.total} of 24. ${up ? `<b>Next level, ${up[0]}:</b> ${up[1]}` : 'That is the top level. Your Monday action is about keeping it there.'}</p>
+    <div class="fill"><span class="label">On Monday · your gap is ${r.weakest.label}</span><p>${r.weakest.monday}</p></div>
+    ${me.sent ? '<p style="margin:26px 0 18px"><b>You are on the list.</b> The framework, the questions and the demos arrive by email after the session.</p>' : `
+    <form id="contact" style="margin:28px 0 18px">
+      <h2>Get the framework and follow-up</h2>
+      <p class="note">One email after the session with the framework, the discussion questions and the demos, plus this result.</p>
+      <label>Name <input type="text" name="name" maxlength="100" autocomplete="name" required></label>
+      <label>Work email <input type="email" name="email" maxlength="200" autocomplete="email" required></label>
+      <label>Company (optional) <input type="text" name="company" maxlength="100" autocomplete="organization"></label>
+      <label class="check"><input type="checkbox" name="consent" required>
+        <span>Douglas may email me the documentation and follow-up from this session, together with my result. Nothing else.</span></label>
+      <p class="err" id="err" role="alert"></p>
+      <button class="primary cta">${icon('plane')}<span class="task">Send me the framework</span><span class="win">Get my playbook</span></button>
+    </form>`}
+    <details><summary>Your score per word</summary>${bars(r.scores, 6)}</details>
+    <details><summary>Change my answers</summary><div class="row" style="margin-top:0"><button id="review">← Review answers</button><button class="link" id="retake">Start over</button></div></details></div>`;
+  $('#review').onclick = () => to(N - 1, 'prev');
+  $('#retake').onclick = () => { me.answers = []; me.started = false; to(0, 'prev'); };
+  const form = $('#contact');
+  if (form) form.onsubmit = async e => {
+    e.preventDefault();
+    const f = new FormData(form);
+    try {
+      await store.submit(row({ name: f.get('name').trim(), email: f.get('email').trim(), company: f.get('company').trim() || null, consent: true }));
+      me.sent = true; save(); renderCheck();
+    } catch (err) { console.error(err); $('#err').textContent = 'That did not save. Check your connection and try again.'; }
+  };
+}
+
+// ---- Host -----------------------------------------------------------------------------------
+let pulse = null, shared = [], hostError = '';
+const go = n => { show(n); live = slide; hostError = ''; store.setSlide(slide).catch(e => { hostError = 'Slide change did not reach the audience: ' + e.message; renderHost(); }); };
+function clock() {
+  const t0 = L.get('tt1766-start', null), el = $('#clock');
+  if (!el) return;
+  const min = t0 ? (Date.now() - t0) / 60000 : 0;
+  el.textContent = t0 ? `${String(Math.floor(min)).padStart(2, '0')}:${String(Math.floor(min * 60 % 60)).padStart(2, '0')}` : 'Start';
+  el.classList.toggle('late', min > SLIDES[slide].until);
+}
+// Order of operations: move, say this now, read the table, then the rarely used things folded away.
+function renderHost() {
+  const s = SLIDES[slide], url = location.origin + location.pathname;
+  const note = ([k, v]) => `<span class="label">${k}</span>${v}`;
+  $('#host').innerHTML = `
+    <section class="card">
+      <div class="hostbar"><button id="prev" ${slide ? '' : 'disabled'}>← Back</button><button id="next" class="primary" ${slide < SLIDES.length - 1 ? '' : 'disabled'}>Next →</button></div>
+      <div class="meta"><span class="label">Slide ${slide + 1} of ${SLIDES.length} · done by minute ${s.until}</span>
+        <button id="clock" class="clock" title="Start or reset the 45-minute clock"></button></div>
+      ${hostError ? `<p class="err" role="alert">${hostError}</p>` : ''}
+      <div class="now">${s.notes.slice(0, 2).map(note).join('')}</div>
+      ${s.notes.slice(2).map(([k, v]) => `<details><summary>${k}</summary><p>${v}</p></details>`).join('')}
+    </section>
+    <section class="card"><h2>Table pulse</h2><div id="pulse"></div></section>
+    <section class="card"><h2>From the table <span class="label" id="sharen"></span></h2><div id="shares"></div></section>
+    <section class="card">
+      <details class="nav"><summary>Jump to a slide</summary><div style="display:block">${NAV.map(([g, ids]) => `<small class="label">${g}</small>
+        <div>${ids.map(n => `<button data-go="${n}" class="${n === slide ? 'on' : ''}">${icon(SLIDES[n].icon)}${SLIDES[n].nav}</button>`).join('')}</div>`).join('')}</div></details>
+      <details class="qr" ${slide ? '' : 'open'}><summary>Join code</summary><div>${qrSvg(url)}<p class="note" style="text-align:center;word-break:break-all">${url}</p></div></details>
+    </section>`;
+  $('#prev').onclick = () => go(slide - 1);
+  $('#next').onclick = () => go(slide + 1);
+  document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go(+b.dataset.go));
+  $('#clock').onclick = () => { if (!L.get('tt1766-start', null) || confirm('Reset the clock?')) { L.set('tt1766-start', Date.now()); clock(); } };
+  clock(); renderPulse(); renderShares();
+}
+function renderPulse() {
+  if (!$('#pulse')) return;
+  $('#pulse').innerHTML = pulse && pulse.n ? `
+    <div class="fill" style="margin:0 0 16px"><span class="label">${pulse.n} ${pulse.n === 1 ? 'person' : 'people'} done · weakest word</span><p>${pulse.weakest.label}</p></div>
+    ${bars(pulse.avg, 6)}<p class="note" style="margin:0">${LEVELS.map((l, n) => `${l[0]} ${pulse.levels[n]}`).join(' · ')}</p>`
+    : '<p class="note" style="margin:0">Nobody has finished the check yet.</p>';
+}
+function renderShares() {
+  if (!$('#shares')) return;
+  $('#sharen').textContent = shared.length ? shared.length : '';
+  $('#shares').innerHTML = shared.length ? [...shared].reverse().map(r => `<div class="share"><span class="label">${esc((KINDS[r.kind] || ['Shared'])[0])}</span>
+    <p style="margin:0">${esc(r.text)}</p>${r.name ? `<p class="note" style="margin:4px 0 0">${esc(r.name)}</p>` : ''}</div>`).join('')
+    : '<p class="note" style="margin:0">Nothing shared yet.</p>';
+}
+async function refreshShares() { try { shared = await store.shares(); renderShares(); } catch (e) { console.error(e); } }
+function qrSvg(text) {
+  if (!window.qrcode) return '';
+  const q = qrcode(0, 'M'); q.addData(text); q.make();
+  return q.createSvgTag({ scalable: true });
+}
+async function refreshPulse() { try { pulse = summarize(await store.responses()); renderPulse(); } catch (e) { console.error(e); } }
+function startHost() {
+  $('#check').hidden = true;
+  $('#status').textContent = 'Host';
+  renderHost(); refreshPulse(); refreshShares();
+  setInterval(refreshPulse, 10000); setInterval(refreshShares, 10000); setInterval(clock, 1000);
+  addEventListener('keydown', e => { if (e.key === 'ArrowRight') go(slide + 1); if (e.key === 'ArrowLeft') go(slide - 1); });
+}
+function renderSignIn() {
+  $('#check').hidden = true;
+  $('#host').innerHTML = `<section class="card"><form id="signin"><h2>Host sign-in</h2>
+    <label>Email <input type="email" name="email" autocomplete="username" required></label>
+    <label>Password <input type="password" name="password" autocomplete="current-password" required></label>
+    <p class="err" id="err" role="alert"></p><button class="primary" style="width:100%">Sign in</button></form></section>`;
+  $('#signin').onsubmit = async e => {
+    e.preventDefault();
+    const f = new FormData(e.target);
+    try { await store.signIn(f.get('email'), f.get('password')); startHost(); }
+    catch (err) { $('#err').textContent = err.message; }
+  };
+}
+
+// ---- Connect: on every screen ---------------------------------------------------------------
+$('#connect').innerHTML = `${icon('add')}Connect`;
+$('#connect').onclick = () => {
+  $('#card').innerHTML = `<h2 id="card-title">Let’s stay in touch</h2>
+    <p class="note">Add me on LinkedIn or send me a message. Everything is behind this code.</p>
+    ${qrSvg(LINK)}<a class="primary" href="${LINK}" target="_blank" rel="noopener">${LINK.replace('https://', '')}</a>
+    <form method="dialog"><button style="width:100%">Close</button></form>`;
+  $('#card').showModal();
+};
+$('#card').onclick = e => { if (e.target === e.currentTarget) e.currentTarget.close(); }; // tap outside to close
+
+// ---- Home and navigation (audience) ---------------------------------------------------------
+const VIEWS = { home: ['Home', 'home'], live: ['Presentation', 'screen'], check: ['My check', 'list'] };
+const viewFromHash = () => isHostView ? 'host' : ({ '#live': 'live', '#check': 'check' })[location.hash] || 'home';
+let view = viewFromHash();
+const nowLine = () => `Now · ${SLIDES[live].tag.join(' · ')}`;
+function renderHome() {
+  const n = me.answers.length, N = QUESTIONS.length, done = n === N && me.i === N;
+  const pick = (to, ic, title, text, status, cta) => `<button class="pick" data-view="${to}">
+    <i class="tile">${icon(ic)}</i><span><strong>${title}</strong>${text}<small class="label"${to === 'live' ? ' id="nowline"' : ''}>${status}</small></span><b>${cta} →</b></button>`;
+  $('#home').innerHTML = `<div class="rise">${pill(['Welcome', 'Table 6'])}
+    <h1>From Pilot to <mark>Platform</mark></h1>
+    <p class="lead">Building an Agentic OS for your organization.</p>
+    <div class="fill" style="margin:16px 0 4px"><span class="label">This is a conversation, not a talk</span>
+      <p>Bring your ideas, your experiences and your challenges, and say them out loud. The table learns the most from what has not worked yet.</p></div>
+    <div class="sharebox">
+    <div class="head"><i class="bulb">${icon('bulb')}</i><h2 id="sharetitle">Share with the table</h2></div>
+    <p id="shared" class="note" role="status" hidden>Shared. Douglas can see it. Share another any time.</p>
+    <form id="share">
+      <div class="chips" role="radiogroup" aria-label="What are you sharing?">${Object.entries(KINDS).map(([k, [l]]) =>
+        `<label><input type="radio" name="kind" value="${k}" ${k === 'challenge' ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div>
+      <label style="margin-top:12px"><textarea name="text" rows="3" maxlength="500" required aria-labelledby="sharetitle" placeholder="${KINDS.challenge[1]}"></textarea></label>
+      <label>Your name (optional) <input type="text" name="name" maxlength="60" autocomplete="name"></label>
+      <p class="err" id="shareerr" role="alert"></p>
+      <button class="primary" style="width:100%">Share with the table</button>
+    </form></div>
+    <p class="note" style="margin:22px 0 0">Two things you can do here, in any order:</p>
+    ${pick('live', 'screen', 'Follow the presentation', 'See the slide Douglas is on, live. Go back if you missed something.', nowLine(), 'Open')}
+    ${pick('check', 'list', 'Take the 2-minute check', `${N} questions. Get your level and one thing to do on Monday.`,
+      done ? `Your level · ${LEVELS[score(me.answers).level][0]}` : n ? `${n} of ${N} answered` : 'Not started', done ? 'See result' : n ? 'Continue' : 'Start')}
+    <p class="note" style="margin:18px 0 0">Want to stay in touch? Tap Connect at the top.</p></div>`;
+  document.querySelectorAll('#home [data-view]').forEach(b => b.onclick = () => location.hash = b.dataset.view);
+  const form = $('#share');
+  form.onchange = e => { if (e.target.name === 'kind') form.text.placeholder = KINDS[e.target.value][1]; };
+  form.onsubmit = async e => {
+    e.preventDefault();
+    const f = new FormData(form), text = f.get('text').trim(), kind = KINDS[f.get('kind')] ? f.get('kind') : 'challenge';
+    $('#shareerr').textContent = '';
+    if (!text) return void ($('#shareerr').textContent = 'Write something first.');
+    form.querySelector('button').disabled = true;
+    try {
+      await store.share({ cid: me.cid, kind, text: text.slice(0, 500), name: f.get('name').trim().slice(0, 60) || null });
+      form.text.value = ''; $('#shared').hidden = false;
+    } catch (err) { console.error(err); $('#shareerr').textContent = 'That did not save. Check your connection and try again.'; }
+    form.querySelector('button').disabled = false;
+  };
+}
+function showView() {
+  $('#home').hidden = view !== 'home';
+  $('#slide').hidden = view !== 'live' && view !== 'host';
+  $('#check').hidden = view !== 'check';
+  $('#tabs').hidden = view === 'host';
+  if (view === 'host') return;
+  $('#tabs').innerHTML = Object.entries(VIEWS).map(([k, [label, ic]]) =>
+    `<button data-view="${k}" class="${k === view ? 'on' : ''}" ${k === view ? 'aria-current="page"' : ''}>${icon(ic)}${label}</button>`).join('');
+  document.querySelectorAll('#tabs [data-view]').forEach(b => b.onclick = () => location.hash = b.dataset.view === 'home' ? '' : b.dataset.view);
+  if (view === 'home') renderHome();
+  if (view === 'live') { dir = 'rise'; renderSlide(); }
+  if (view === 'check') renderCheck();
+  scrollTo(0, 0);
+}
+
+// ---- Start ----------------------------------------------------------------------------------
+addEventListener('hashchange', () => {
+  if ((location.hash === '#host') !== isHostView) return location.reload();
+  view = viewFromHash(); showView();
+});
+(async () => {
+  if (!sb) $('#status').textContent = 'Demo mode';
+  renderSlide(); showView();
+  const pull = () => store.getSlide().then(setLive).catch(console.error);
+  await pull();
+  store.onSlide(setLive);
+  setInterval(pull, 5000); // fallback when the live connection drops on conference wifi
+  if (!isHostView) {
+    // arrow keys: questions in the check, slides in the presentation (not while typing in the sign-up form)
+    addEventListener('keydown', e => {
+      if (e.target.matches?.('input')) return;
+      const left = e.key === 'ArrowLeft', right = e.key === 'ArrowRight';
+      const b = view === 'check' ? (left ? $('#back') || $('#review') : right ? $('#fwd') || $('#start') : null)
+        : view === 'live' ? (left ? $('#sprev') : right ? $('#snext') : null) : null;
+      if (b && !b.disabled) { e.preventDefault(); b.click(); }
+    });
+  }
+  else if (await store.isHost()) startHost();
+  else renderSignIn();
+})();
+</script>
+</body>
+</html>
