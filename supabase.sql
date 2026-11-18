@@ -18,6 +18,7 @@ create table public.responses (
   name text check (length(name) <= 100),
   email text check (length(email) <= 200),
   company text check (length(company) <= 100),
+  linkedin text check (length(linkedin) <= 200),
   consent boolean not null default false,
   check (email is null or consent)                       -- no contact details without consent
 );

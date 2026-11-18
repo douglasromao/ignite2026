@@ -689,6 +689,7 @@ function renderCheck(dir = 'rise') {
       <label>Name <input type="text" name="name" maxlength="100" autocomplete="name" required></label>
       <label>Work email <input type="email" name="email" maxlength="200" autocomplete="email" required></label>
       <label>Company (optional) <input type="text" name="company" maxlength="100" autocomplete="organization"></label>
+      <label>LinkedIn profile (optional) <input type="text" name="linkedin" maxlength="200" inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="linkedin.com/in/yourname"></label>
       <label class="check"><input type="checkbox" name="consent" required>
         <span>Douglas may email me the documentation and follow-up from this session, together with my result. Nothing else.</span></label>
       <p class="err" id="err" role="alert"></p>
@@ -703,7 +704,7 @@ function renderCheck(dir = 'rise') {
     e.preventDefault();
     const f = new FormData(form);
     try {
-      await store.submit(row({ name: f.get('name').trim(), email: f.get('email').trim(), company: f.get('company').trim() || null, consent: true }));
+      await store.submit(row({ name: f.get('name').trim(), email: f.get('email').trim(), company: f.get('company').trim() || null, linkedin: f.get('linkedin').trim() || null, consent: true }));
       me.sent = true; save(); renderCheck();
     } catch (err) { console.error(err); $('#err').textContent = 'That did not save. Check your connection and try again.'; }
   };

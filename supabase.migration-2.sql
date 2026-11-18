@@ -28,3 +28,6 @@ alter table public.feedback enable row level security;
 create policy "anyone gives feedback" on public.feedback for insert to anon, authenticated with check (true);
 create policy "host reads feedback" on public.feedback for select to authenticated
   using ((auth.jwt() ->> 'email') = 'HOST_EMAIL');
+
+-- Optional LinkedIn link on the check's contact form (added after the first migration).
+alter table public.responses add column if not exists linkedin text check (length(linkedin) <= 200);
