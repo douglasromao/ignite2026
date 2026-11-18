@@ -1,3 +1,4 @@
 .claude/
 .DS_Store
 supabase.local.sql
+supabase.migration-2.local.sql
