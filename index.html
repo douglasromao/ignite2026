@@ -414,16 +414,17 @@ const DUO = `<div class="duo">
 </div>`;
 
 const icon = k => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${I[k]}</svg>`;
-// The one-page matrix: columns are knowledge/action, rows are one team/whole organization. Defined after WORDS, I and icon().
+// The map (matrix) and the closing levels and gates: columns are knowledge/action, rows are one team/whole organization. Defined after WORDS, I and icon().
 const cell = (n, line) => `<button data-step="${n}" aria-label="Go to round ${n}: ${WORDS[n - 1].label}"><div>${icon(WORDS[n - 1].icon)}<b>${n}</b></div><strong>${WORDS[n - 1].label}</strong><span>${line}</span></button>`;
-const FRAMEWORK = `
+const MATRIX = `
   <div class="matrix">
     <span class="label">Knowledge</span><span class="label">Action</span>
     <span class="label axis">One team</span>
     ${cell(1, 'Every project gets a living brain on day one.')}${cell(2, 'Agents do the repeatable work, with gates where a person says yes.')}
     <span class="label axis">Whole organization</span>
     ${cell(4, 'Every agent known, owned and measured.')}${cell(3, 'Every team in its own tool, on the same brain.')}
-  </div>
+  </div>`;
+const LEVELS_GATES = `
   <div class="ladder">${LEVELS.map(l => `<span>${l[0]}</span>`).join('')}</div>
   <p class="note">Before a pilot starts, agree four gates: <b>adoption</b> (people keep using it), <b>quality</b> (rated where the work is delivered),
   <b>return</b> (measured saving against total cost) and <b>evidence</b> (real numbers from real work). All four pass: spread. Two or three: one extension. Fewer: stop, and keep the lessons.</p>`;
@@ -443,9 +444,12 @@ const SLIDES = [
       ['Tie to the keynote', 'Yesterday Satya called Copilot the new OS for work. Our title says Agentic OS. So what does that take in your organization?'],
       ['Intros', '20 seconds each. Note who is a developer, a PM, a line manager, in sales. You will call on them in round 3.'],
       ['Frame', 'Four steps, in build order. Agents cannot act well without memory. Teams cannot connect until agents act on a shared memory. And you cannot scale any of it without trust. One round each, then what you will do Monday.']] },
+  { nav: 'The map', icon: 'layers', tag: ['The map', 'four steps'], title: 'The Agentic OS [on one page]', html: MATRIX, nosteps: true, until: 10,
+    notes: [['Do', 'Point at each box for five seconds. Do not explain them yet: the rounds do that.'],
+      ['Tell them', 'Tap a box on your phone any time to jump to that round.']] },
   { word: 'remember', nav: 'Remember', icon: 'brain', tag: ['Round 1', 'Remember'], title: 'The Project [Brain]',
     body: 'Everything the project produces flows into one living memory. It lives in SharePoint and Azure DevOps, where people and agents both read it and write to it.', html: BRAIN,
-    ask: 'A new person joins your project tomorrow. Where do they find out why a decision was made?', until: 17,
+    ask: 'A new person joins your project tomorrow. Where do they find out why a decision was made?', until: 18,
     notes: [['Follow-ups', 'Who is allowed to write to it: people only, or agents too? · What is in your project memory that you would not want an agent to read? · What goes stale first?'],
       ['Listen for', '“We ask in Teams.” That means the memory lives in people’s heads. Name it: lessons leave when people roll off.'],
       ['Demo (2 min)', 'A newcomer asks the brain a question. Paper fallback ready.'],
@@ -479,7 +483,7 @@ const SLIDES = [
       ['Line', 'Measured, not self-reported.'],
       ['Demo (1 min)', 'Agent 365: the list of agents, owners and access. New this week: Business Analytics, rolling out in the early-access program, and cost management with spend limits and alerts, in preview.'],
       ['Follow-up', 'Who defined success before your last pilot started?']] },
-  { nav: 'The model', icon: 'layers', tag: ['The model', 'one page'], title: 'The Agentic OS [on one page]', html: FRAMEWORK, nosteps: true, until: 41,
+  { nav: 'Levels', icon: 'list', tag: ['The model', 'levels and gates'], title: 'How far [along are you?]', html: LEVELS_GATES, until: 41,
     notes: [['Use the table pulse', 'Read out the weakest word from the panel below: “This table is weakest on …”. Ask who scored it low and why.'],
       ['Ladder', 'Explorer → Practitioner → Integrator → Champion. Most organizations are strong on Act and weak on Remember: agents without memory.'],
       ['Gates', 'The point is agreeing them before the pilot. Example thresholds: 70% of users at Practitioner or above, 4 out of 5 average rating, 5x return, 3 pieces of work with real numbers.']] },
@@ -494,16 +498,17 @@ const SLIDES = [
 // What the host says, asks and bridges with, per slide index. Merged into SLIDES so the notes above stay untouched.
 [
   { say: 'Welcome to Table 6. I am Douglas. Grab the QR while you sit down: it follows along with me, and there is a two-minute check you can take any time.', bridge: 'Let me start with a number.' },
-  { say: 'Yesterday Satya said there are more than 50 million agents in Agent 365. Hands up if one of yours remembers what it did last week.', bridge: 'So let us start where the gap is: memory.' },
+  { say: 'Yesterday Satya said there are more than 50 million agents in Agent 365. Hands up if one of yours remembers what it did last week.', bridge: 'Before we dig in, here is the map.' },
+  { say: 'Here is the map for the next forty minutes. Knowledge and action, for one team and for the whole organization. We take one box at a time.', bridge: 'We start top left: memory.' },
   { say: 'Every project already has a memory. It is scattered across SharePoint, DevOps, chats and people’s heads. The Project Brain is the decision to keep it in one place that agents can read and write too.', quiet: 'Ask: who here has joined a project halfway through? How long until you were useful?', bridge: 'A brain that only remembers is an archive. The next step is letting something act on it.' },
   { say: 'Most agents today wait to be asked. The shift is agents that start on an event, do the work, and stop at a checkpoint where a person says yes.', quiet: 'Ask: what is the most boring thing your team does every week?', bridge: 'One agent helping one team is still a pilot. It becomes a platform when the teams connect.' },
   { say: 'There are two ways to get every team onto the same brain. Leave them in the tools they know, or build your own front door. We did the second, and I will tell you what it cost.', quiet: 'Ask the person who has not spoken yet which tool they would refuse to give up.', bridge: 'The more agents and teams you connect, the more one question matters: can you trust it?' },
-  { say: 'Trust is not a policy document. It is knowing every agent, who owns it, what it touches, what it costs, and whether it really saves the time people claim.', quiet: 'Ask: has anyone here ever switched an agent off? What happened?', bridge: 'Let me put the four on one page.' },
-  { say: 'Here is the whole thing. Knowledge and action, for one team and for the whole organization. Your result on the phone tells you which box is your weakest.', bridge: 'So what do you actually do with this next week?' },
+  { say: 'Trust is not a policy document. It is knowing every agent, who owns it, what it touches, what it costs, and whether it really saves the time people claim.', quiet: 'Ask: has anyone here ever switched an agent off? What happened?', bridge: 'So how far along are you?' },
+  { say: 'Here is where your answers put you. Four levels, from exploring on your own to running a measured platform. Your result on the phone tells you which step is your weakest.', bridge: 'So what do you actually do with this next week?' },
   { say: 'I do not want you to leave with a framework. I want you to leave with one thing you will do on Monday.', quiet: 'Go first yourself: say your own Monday action.', bridge: 'Thank you. That is the best part of the session for me.' },
   { say: 'Thanks for the conversation. Leave your email in the check and I will send the framework, the questions and the demos. And tell me how this went: there is a feedback tab.' },
 ].forEach((x, i) => Object.assign(SLIDES[i], x));
-const NAV = [['Open', [0, 1]], ['Rounds', [2, 3, 4, 5]], ['Close', [6, 7, 8]]];
+const NAV = [['Open', [0, 1, 2]], ['Rounds', [3, 4, 5, 6]], ['Close', [7, 8, 9]]];
 
 // ---- Storage --------------------------------------------------------------------------------
 const L = {
@@ -593,9 +598,10 @@ function burst(i) {
   fx.append(el);
 }
 function sendReact(i) { const t = Date.now(); if (t - lastR < 350) return; lastR = t; store.react(i); burst(i); } // broadcast does not echo to the sender
+const LAST_ROUND = SLIDES.reduce((m, x, i) => x.word ? i : m, -1); // slides after the last round count all four steps as done
 function renderSlide() {
   const s = SLIDES[slide];
-  const at = s.word ? WORDS.findIndex(w => w.k === s.word) : slide > 5 ? 4 : -1; // how far up the stairs we are
+  const at = s.word ? WORDS.findIndex(w => w.k === s.word) : slide > LAST_ROUND ? 4 : -1; // how far up the stairs we are
   $('#slide').innerHTML = `<div class="${dir}">${pill(s.tag)}
     <h1>${s.title.replace('[', '<mark>').replace(']', '</mark>')}</h1>
     ${s.body ? `<p class="lead">${s.body}</p>` : ''}${s.html || ''}
