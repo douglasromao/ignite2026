@@ -57,6 +57,7 @@ p { margin: 0 0 12px; }
 .duo p:nth-of-type(2), .duo .ours { margin: 0; color: var(--paper); }
 .duo .ours { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--hair); font-weight: 600; }
 .duo .ours img { width: 36px; height: 36px; object-fit: contain; flex: none; }
+.duo .ours .fm { width: auto; height: 22px; margin-left: auto; }
 .srcs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 14px; }
 .srcs span { border: 1.5px solid var(--hair); border-radius: 8px; padding: 6px 2px; text-align: center; font-size: 12.5px; font-weight: 600; }
 #brain { display: block; width: 100%; aspect-ratio: 320 / 220; }
@@ -389,7 +390,7 @@ function startBrain() {
 const DUO = `<div class="duo">
   <div><b>A</b><strong>Same brain, their tools</strong><p>Each team stays in the tool it already knows: GitHub Copilot, Microsoft 365 Copilot, Dynamics 365.</p><p>Quick to start. You are limited by what each tool can reach.</p></div>
   <div><b>B</b><strong>Same brain, your own tool</strong><p>You build one workbench around how you deliver, with a front door for each role.</p><p>Your process is built in. You have to build it and keep it running.</p>
-    <p class="ours"><img src="logos/fmdk-agentic-os.png" alt="" onerror="this.remove()">The one we built: FMDK Agentic OS</p></div>
+    <p class="ours"><img src="logos/fmdk-agentic-os.png" alt="" onerror="this.remove()">Hive AI<img class="fm" src="logos/fellowmind.png" alt="Fellowmind" onerror="this.remove()"></p></div>
 </div>`;
 
 const icon = k => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${I[k]}</svg>`;
